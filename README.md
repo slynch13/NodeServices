@@ -1,104 +1,75 @@
-NodeServices
-========
+# JavaScriptServices
 
 This project is part of ASP.NET Core. You can find samples, documentation and getting started instructions for ASP.NET Core at the [Home](https://github.com/aspnet/home) repo.
 
 ## What is this?
 
-This repo hosts sources for the `Microsoft.AspNet.AngularServices` and `Microsoft.AspNet.ReactServices` packages, along with samples and the underlying `Microsoft.AspNet.NodeServices` project.
+`JavaScriptServices` is a set of technologies for ASP.NET Core developers. It provides infrastructure that you'll find useful if you use Angular 2 / React / Knockout / etc. on the client, or if you build your client-side resources using Webpack, or otherwise want to execute JavaScript on the server at runtime.
 
-#### `Microsoft.AspNet.AngularServices`
+This repo contains:
 
-This package provides facilities for developers building Angular 2 applications on ASP.NET.
+ * A set of NuGet/NPM packages that implement functionality for:
+   * Invoking arbitrary NPM packages at runtime from .NET code ([docs](https://github.com/aspnet/JavaScriptServices/tree/master/src/Microsoft.AspNetCore.NodeServices#simple-usage-example))
+   * Server-side prerendering of SPA components ([docs](https://github.com/aspnet/JavaScriptServices/tree/master/src/Microsoft.AspNetCore.SpaServices#server-side-prerendering))
+   * Webpack dev middleware ([docs](https://github.com/aspnet/JavaScriptServices/tree/master/src/Microsoft.AspNetCore.SpaServices#webpack-dev-middleware))
+   * Hot module replacement (HMR) ([docs](https://github.com/aspnet/JavaScriptServices/tree/master/src/Microsoft.AspNetCore.SpaServices#webpack-hot-module-replacement))
+   * Server-side and client-side routing integration ([docs](https://github.com/aspnet/JavaScriptServices/tree/master/src/Microsoft.AspNetCore.SpaServices#routing-helper-mapspafallbackroute))
+   * Server-side and client-side validation integration
+   * "Cache priming" for Angular 2 apps
+   * "Lazy loading" for Knockout apps
+ * A Yeoman generator that creates preconfigured app starting points ([guide](http://blog.stevensanderson.com/2016/05/02/angular2-react-knockout-apps-on-aspnet-core/))
+ * Samples and docs
 
-Most notably, this includes **server-side prerendering**. You can build a "universal" (sometimes called "isomorphic") single-page application that renders its initial HTML on the server, and then continues execution on the client. Benefits:
- * Massively improves application delivery and startup time (often reducing from 5-10+ seconds to 100ms or so, especially on high-latency networks or low-CPU-speed clients)
- * Enables search engine crawlers to explore your SPA
- * Ensures that users don't wait for any 'loading' UI when they first hit your application.
+Everything here is cross-platform, and works with .NET Core 1.0 RC2 or later on Windows, Linux, or OS X.
 
-A sample is included in this repo.
+## Creating new applications
 
-We are also working with the Angular team to add support for other client+server features such as cache priming, so that the client-side SPA code does not need to wait for an initial set of ajax requests to complete - the necessary data can be bundled with the initial page. Another possible future feature would be helpers to emit a JSON representation of C# class model metadata, so some validation rules can transparently apply both on the server and the client.
+If you want to build a brand-new ASP.NET Core app that uses Angular 2 / React / Knockout on the client, consider starting with the `aspnetcore-spa` generator. This lets you choose your client-side framework, and generates a starting point that includes applicable features such as Webpack dev middleware, server-side prerendering, and efficient production builds.
 
-#### `Microsoft.AspNet.ReactServices`
-
-This package provides similar facilities for React applications on ASP.NET.
-
-This includes **server-side prerendering** to support "universal" (sometimes called "isomorphic") single-page applications as described above. A sample is included in this repo.
-
-We are open to adding other client+server features that will make React developers more productive on ASP.NET. Please let us know if you have specific feature proposals.
-
-#### *Your favourite JavaScript framework goes here*
-
-Although we have finite resources and are currently focused on adding Angular 2 and React support, the architecture here is designed so that you can build your own server-side support for other client-side libraries and frameworks.
-
-The underlying `Microsoft.AspNet.NodeServices` package is a general-purpose way for ASP.NET applications (or .NET applications more generally) to interoperate with code running inside Node.js. That's how `AngularServices`/`ReactServices` server-side rendering works - those packages transparently spin up Node.js instances that can perform the server-side rendering. Any code that runs inside Node can efficiently be invoked from .NET via this package, which takes care of starting and stopping Node instances and manages the communication between .NET and Node.
-
-## Using AngularServices/ReactServices in your own projects
-
-Currently it's a little early for production use in real projects, because for example AngularServices uses [angular-universal](https://github.com/angular/universal), which is still in prerelease. Some important features are either not implemented or are not yet stable. The React support is more solid.
-
-If you're a keen early-adopter type, you can infer usage from the samples. Let us know how you get on :)
-
-## Trying the samples
-
-To get started,
-
-1. Ensure you have [installed the latest stable version of ASP.NET Core](https://www.asp.net/vnext). Instructions are available for [Windows](http://docs.asp.net/en/latest/getting-started/installing-on-windows.html), [Mac](http://docs.asp.net/en/latest/getting-started/installing-on-mac.html), and [Linux](http://docs.asp.net/en/latest/getting-started/installing-on-linux.html).
-2. Ensure you have [installed a recent version of Node.js](https://nodejs.org/en/). To check this works, open a console prompt, and type `node -v`. It should print a version number.
-3. Ensure you have installed `gulp` globally. You can check if it's there by running `gulp -v`. If you need to install it:
-
-   ```
-   npm install -g gulp
-   ```
-
-3. Clone this repository:
-
-   ```
-   git clone https://github.com/aspnet/NodeServices.git
-   ```
-
-**Using Visual Studio on Windows**
-
-1. Open the solution file, `NodeServices.sln`, in Visual Studio.
-2. Wait for it to finish fetching and installing dependencies.
-3. If you get the error `'reactivex/rxjs' is not in the npm registry`, then your Visual Studio installation's version of the NPM tool is out of date. You will need to restore NPM dependencies manually from a command prompt (e.g., `cd samples\angular\MusicStore` then `npm install`).
-4. Select a sample and run it. For example, right-click on the `MusicStore` project in Solution Explorer and choose `Set as startup project`. Then press `Ctrl+F5` to launch it.
-
-Note that to run the React example, you'll also need to run `webpack` from the `samples\react\ReactGrid` directory (having first installed webpack if you don't yet have it - `npm install -g webpack`).
-
-**Using dnx on Windows/Mac/Linux**
-
-1. Ensure you are using a suitable .NET runtime. Currently, this project is tested with version `1.0.0-rc1-final` on `coreclr`:
-
-   ```
-   dnvm use 1.0.0-rc1-final -r coreclr
-   ```
-
-2. In the solution root directory (`NodeServices` - i.e., the directory that contains `NodeServices.sln`), restore the .NET dependencies:
+See: [getting started with the `aspnetcore-spa` generator](http://blog.stevensanderson.com/2016/05/02/angular2-react-knockout-apps-on-aspnet-core/). It's much easier than configuring everything to work together manually!
 
 
-   ```
-   cd NodeServices
-   dnu restore
-   ```
+## Adding to existing applications
 
-3. Change directory to whichever sample you want to run, then restore the Node dependencies. For example:
+If you have an existing ASP.NET Core application, or if you just want to use the underlying JavaScriptServices packages directly, you can install these packages using NuGet and NPM:
 
-   ```
-   cd samples/angular/MusicStore/
-   npm install
-   ```
+ * `Microsoft.AspNetCore.NodeServices`
+   * This provides a fast and robust way for .NET code to run JavaScript on the server inside a Node.js environment. You can use this to consume arbitrary functionality from NPM packages at runtime in your ASP.NET Core app.
+   * Most applications developers don't need to use this directly, but you can do so if you want to implement your own functionality that involves calling Node.js code from .NET at runtime.
+   * Find [documentation and usage examples here](https://github.com/aspnet/JavaScriptServices/tree/master/src/Microsoft.AspNetCore.NodeServices#microsoftaspnetcorenodeservices).
+ * `Microsoft.AspNetCore.SpaServices`
+   * This provides infrastructure that's generally useful when building Single Page Applications (SPAs) with technologies such as Angular 2 or React (for example, server-side prerendering and webpack middleware). Internally, it uses the `NodeServices` package to implement its features.
+   * Find [documentation and usage examples here](https://github.com/aspnet/JavaScriptServices/tree/master/src/Microsoft.AspNetCore.SpaServices#microsoftaspnetcorespaservices).
+ * `Microsoft.AspNetCore.AngularServices`
+   * This builds on the `SpaServices` package and includes features specific to Angular 2. Currently, this includes validation helpers and a "cache priming" feature, which let you pre-evaluate ajax requests on the server so that client-side code doesn't need to make network calls once it's loaded.
+   * The code is [here](https://github.com/aspnet/JavaScriptServices/tree/master/src/Microsoft.AspNetCore.AngularServices), and you'll find a usage example for [the validation helper here](https://github.com/aspnet/JavaScriptServices/blob/master/samples/angular/MusicStore/wwwroot/ng-app/components/admin/album-edit/album-edit.ts), and for the [cache priming here](https://github.com/aspnet/JavaScriptServices/blob/master/samples/angular/MusicStore/Views/Home/Index.cshtml#L7-8). Full docs are to be written.
 
-4. Where applicable, build the project. For example, the Angular example uses Gulp, so you'll need to execute `gulp`, whereas the React example uses Webpack, so you'll need to execute `webpack`. The ES2015 example does not need to be built.
+There was previously a `Microsoft.AspNetCore.ReactServices` but this is not currently needed - all applicable functionality is in `Microsoft.AspNetCore.SpaServices`, because it's sufficiently general. We might add a new `Microsoft.AspNetCore.ReactServices` package in the future if new React-specific requirements emerge.
 
-   If you don't already have it, install the applicable build tool first (e.g., `npm install -g webpack`).
+If you want to build a helper library for some other SPA framework, you can do so by taking a dependency on `Microsoft.AspNetCore.SpaServices` and wrapping its functionality in whatever way is most useful for your SPA framework.
 
-5. Run the project (and wait until it displays the message `Application started`)
+## Samples and templates
 
-  ```
-  dnx web
-  ```
+Inside this repo, [the `templates` directory](https://github.com/aspnet/JavaScriptServices/tree/master/templates) contains the application starting points that the `aspnetcore-spa` generator emits. If you want, you can clone this repo and run those applications directly. But it's easier to [use the Yeoman tool to run the generator](http://blog.stevensanderson.com/2016/05/02/angular2-react-knockout-apps-on-aspnet-core/).
 
-6. Browse to [`http://localhost:5000/`](http://localhost:5000/)
+Also in this repo, [the `samples` directory](https://github.com/aspnet/JavaScriptServices/tree/master/samples) contains examples of using the JavaScript services family of packages with Angular 2 and React, plus examples of standalone `NodeServices` usage for runtime code transpilation and image processing.
 
+**To run the samples:**
+
+ * Clone this repo
+ * Change directory to the same you want to run (e.g., `cd samples/angular/MusicStore`)
+ * Restore dependencies (run `dotnet restore` and `npm install`)
+ * Run the application (`dotnet run`)
+ * Browse to [http://localhost:5000](http://localhost:5000)
+
+## Contributing
+
+If you're interested in contributing to the various packages, samples, and project templates in this repo, that's great! You can run the code in this repo just by:
+
+ * Cloning the repo
+ * Running `dotnet restore` at the repo root dir
+ * Going to whatever sample or template you want to run (e.g., `cd templates/Angular2Spa`)
+ * Restoring NPM dependencies (run `npm install`)
+ * Launching it (`dotnet run`)
+
+If you're planning to submit a pull request, and if it's more than a trivial fix (e.g., for a typo), it's usually a good idea first to file an issue describing what you're proposing to do and how it will work. Then you can find out if it's likely that such a pull request will be accepted, and how it fits into wider ongoing plans.

@@ -22,7 +22,7 @@ class MyGenerator extends yeoman.Base {
 
     prompting() {
         const done = this.async();
-        
+
         this.prompt([{
             type: 'list',
             name: 'framework',
@@ -40,13 +40,18 @@ class MyGenerator extends yeoman.Base {
             done();
         });
     }
-    
+
     writing() {
         var templateRoot = this.templatePath(this._answers.framework);
         glob.sync('**/*', { cwd: templateRoot, dot: true, nodir: true }).forEach(fn => {
             // Token replacement in filenames
             let outputFn = fn.replace(/tokenreplace\-([^\.\/]*)/g, (substr, token) => this._answers[token]);
-            
+
+            // Rename template_gitignore to .gitignore in output
+            if (path.basename(fn) === 'template_gitignore') {
+                outputFn = path.join(path.dirname(fn), '.gitignore');
+            }
+
             this.fs.copyTpl(
                 path.join(templateRoot, fn),
                 this.destinationPath(outputFn),
@@ -54,23 +59,15 @@ class MyGenerator extends yeoman.Base {
             );
         });
     }
-    
+
     installingDeps() {
-        // Strictly speaking, with DNX, the 'prepare' script runs 'npm install' anyway so we don't really need
-        // to run it from here. But it will be needed with RC2, and it doesn't make the setup take much longer
-        // because the second run is almost a no-op, so it's OK to leave it here for now.
         this.installDependencies({
             npm: true,
             bower: false,
             callback: () => {
-                this.spawnCommandSync('dnu', ['restore']);
-
-                // With DNX, the 'prepare' script builds the vendor files automatically so the following is not
-                // required. With RC2 and the 'dotnet' tooling, that won't happen automatically, so the following
-                // will be required:
-                // this.spawnCommandSync('./node_modules/.bin/webpack', ['--config', 'webpack.config.vendor.js']);
-
-                this.spawnCommandSync('./node_modules/.bin/webpack');                
+                this.spawnCommandSync('dotnet', ['restore']);
+                this.spawnCommandSync('./node_modules/.bin/webpack', ['--config', 'webpack.config.vendor.js']);
+                this.spawnCommandSync('./node_modules/.bin/webpack');
             }
         });
     }
